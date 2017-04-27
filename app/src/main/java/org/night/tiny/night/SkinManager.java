@@ -64,7 +64,7 @@ public class SkinManager {
                 value = valueName;
             }
 
-            resourceId = resources.getIdentifier(value, type, context.getPackageName());
+            resourceId = resources.getIdentifier(value, type, mSkinPackageName);
             if (resourceId == 0) {
                 Log.e(TAG, "Night$ResourceNotFoundException -> " + valueName);
             }

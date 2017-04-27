@@ -1,6 +1,10 @@
 package org.night.tiny.night;
 
+import android.app.Activity;
+import android.os.Build;
 import android.text.TextUtils;
+import android.view.Window;
+import android.view.WindowManager;
 
 /**
  * Created by tiny on 2017/4/27.

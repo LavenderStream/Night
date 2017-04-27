@@ -11,7 +11,7 @@ import com.apkfuns.logutils.LogUtils;
 
 import org.night.tiny.night.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity implements Night.NightModeChangeListener {
+public class MainActivity extends AppCompatActivity implements NightModeChangeListener {
 
     private ActivityMainBinding mBinding;
 

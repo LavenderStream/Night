@@ -151,28 +151,4 @@ public class Binding {
     public static void setImageWithGlide(@NonNull ImageView imageView, String valueName) {
         Night.getInstance().setImageViewWithGlide(imageView, valueName);
     }
-
-
-    /**
-     * 设置状态栏沉浸
-     * <p>
-     * 在base activity中调用即可
-     *
-     * @param activity activity
-     */
-    public static void setWindowStatusBarColor(Activity activity) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = activity.getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-                int colorId = SkinManager.getInstance().getResouceFromValueName(activity, "color", "bg");
-
-                window.setStatusBarColor(activity.getResources().getColor(colorId));
-                window.setNavigationBarColor(activity.getResources().getColor(colorId));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
