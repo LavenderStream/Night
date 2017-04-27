@@ -2,9 +2,12 @@ package org.night.tiny.night;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +25,10 @@ import com.apkfuns.logutils.LogUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
+import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,13 +46,14 @@ import java.util.Set;
 public class Night {
     private static final String TAG = "Night";
 
-    // 当前是否时黑色模式须在程序加载的时候设置
-    private boolean mIsNight = false;
     private static Night ourInstance = new Night();
     // 存放fragment或者activity的set，用于通知存活页面进行更改
     private static Set<NightModeChangeListener> mListeners = new HashSet<>();
     // 存放r文件中的color drawable的相关信息
     private static final SparseArray<String> resourceMap = new SparseArray<>();
+
+    // 当前是否时黑色模式须在程序加载的时候设置
+    private boolean mIsNight = false;
 
     public static Night getInstance() {
         return ourInstance;
@@ -55,75 +62,66 @@ public class Night {
     private Night() {
     }
 
-    public interface NightModeChangeListener {
-        void onNightChange();
-    }
-
-    private void drawable(View view, String valueName) {
-        checkNull(valueName);
+    void drawable(View view, String valueName) {
+        Utils.checkNull(valueName);
         view.setTag(R.id.night_drawable, valueName);
         setViewDrawable(view);
     }
 
-    private void drawable(View view, int valueId) {
+    void drawable(View view, int valueId) {
         drawable(view, resourceMap.get(valueId));
     }
 
-    private void background(View view, String valueName) {
-        checkNull(valueName);
+    void background(View view, String valueName) {
+        Utils.checkNull(valueName);
         view.setTag(R.id.night_background, valueName);
         setViewBackGround(view);
     }
 
-    private void background(View view, int valueId) {
+    void background(View view, int valueId) {
         background(view, resourceMap.get(valueId));
     }
 
-    private void textColor(TextView view, String valueName) {
-        checkNull(valueName);
+    void textColor(TextView view, String valueName) {
+        Utils.checkNull(valueName);
         view.setTag(R.id.night_textcolor, valueName);
         setViewTextColor(view);
     }
 
-    private void textColor(TextView view, int valueId) {
+    void textColor(TextView view, int valueId) {
         textColor(view, resourceMap.get(valueId));
     }
 
-    private void hintTextColor(TextView view, String valueName) {
-        checkNull(valueName);
+    void hintTextColor(TextView view, String valueName) {
+        Utils.checkNull(valueName);
         view.setTag(R.id.night_hinttextcolor, valueName);
         setViewHintTextColor(view);
     }
 
-    private void hintTextColor(TextView view, int valueId) {
+    void hintTextColor(TextView view, int valueId) {
         hintTextColor(view, resourceMap.get(valueId));
     }
 
-    private void drawableLeft(TextView view, String valueName) {
-        checkNull(valueName);
+    void drawableLeft(TextView view, String valueName) {
+        Utils.checkNull(valueName);
         view.setTag(R.id.night_drawableleft, valueName);
         setViewDrawableLeft(view);
     }
 
-    private void drawableLeft(TextView view, int valueId) {
+    void drawableLeft(TextView view, int valueId) {
         drawableLeft(view, resourceMap.get(valueId));
     }
 
-    private void setImageViewWithGlide(ImageView view, int valueId) {
+    void setImageViewWithGlide(ImageView view, int valueId) {
         setImageViewWithGlide(view, resourceMap.get(valueId));
     }
 
-    private void setImageViewWithGlide(ImageView view, String valueName) {
-        checkNull(valueName);
+    void setImageViewWithGlide(ImageView view, String valueName) {
+        Utils.checkNull(valueName);
         view.setTag(R.id.night_imageview, valueName);
         setImageViewWithGlide(view);
     }
 
-    private void checkNull(String valueName) {
-        if (TextUtils.isEmpty(valueName)) {
-            throw new RuntimeException("Night$ResourceMustNoNull" + valueName);
-        }
-    }
 
     /**
      * 递归调用更改布局颜色属性
@@ -164,51 +162,56 @@ public class Night {
         }
     }
 
-    private void setViewDrawableLeft(View view) {
+    void setViewDrawableLeft(View view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_drawableleft))) {
-            int resId = getResouceFromValueName(view.getContext(), "drawable",
-                    (String) view.getTag(R.id.night_drawableleft));
+            int resId = SkinManager.getInstance().getResouceFromValueName(view.getContext(),
+                    "drawable", (String) view.getTag(R.id.night_drawableleft));
             Drawable drawableLeft = view.getContext().getResources().getDrawable(resId);
-            drawableLeft.setBounds(0, 0, drawableLeft.getMinimumWidth(), drawableLeft.getMinimumHeight());
+            drawableLeft.setBounds(0, 0, drawableLeft.getMinimumWidth(), drawableLeft
+                    .getMinimumHeight());
             ((TextView) view).setCompoundDrawables(drawableLeft, null, null, null);
         }
     }
 
-    private void setViewHintTextColor(View view) {
+    void setViewHintTextColor(View view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_hinttextcolor))) {
-            int colorId = getResouceFromValueName(view.getContext(), "color",
-                    (String) view.getTag(R.id.night_hinttextcolor));
+            int colorId = SkinManager.getInstance().getResouceFromValueName(view.getContext(),
+                    "color", (String) view.getTag(R.id.night_hinttextcolor));
             ((TextView) view).setHintTextColor(view.getResources().getColor(colorId));
         }
     }
 
-    private void setViewTextColor(View view) {
+    void setViewTextColor(View view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_textcolor))) {
-            int colorId = getResouceFromValueName(view.getContext(), "color",
-                    (String) view.getTag(R.id.night_textcolor));
+            int colorId = SkinManager.getInstance().getResouceFromValueName(view.getContext(),
+                    "color", (String) view.getTag(R.id.night_textcolor));
             ((TextView) view).setTextColor(view.getResources().getColor(colorId));
         }
     }
 
-    private void setViewDrawable(View view) {
+    void setViewDrawable(View view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_drawable))) {
-            int drawable = getResouceFromValueName(view.getContext(), "drawable",
-                    (String) view.getTag(R.id.night_drawable));
+            int drawable = SkinManager.getInstance().getResouceFromValueName(view.getContext(),
+                    "drawable", (String) view.getTag(R.id.night_drawable));
             view.setBackgroundResource(drawable);
         }
     }
 
-    private void setViewBackGround(View view) {
+    void setViewBackGround(View view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_background))) {
-            view.setBackgroundResource(getResouceFromValueName(view.getContext(), "color",
-                    (String) view.getTag(R.id.night_background)));
+            view.setBackgroundResource(SkinManager.getInstance().getResouceFromValueName(view.getContext(),
+                    "color", (String) view.getTag(R.id.night_background)));
         }
     }
 
-    private void setImageViewWithGlide(ImageView view) {
+    void setImageViewWithGlide(ImageView view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_imageview))) {
-            Glide.with(view.getContext()).load(getResouceFromValueName(view.getContext(), "drawable",
-                    (String) view.getTag(R.id.night_imageview))).dontAnimate().centerCrop().into(new GlideDrawableImageViewTarget(view));
+            Glide.with(view.getContext()).load(SkinManager.getInstance()
+                    .getResouceFromValueName(view.getContext(), "drawable",
+                            (String) view.getTag(R.id.night_imageview)))
+                    .dontAnimate()
+                    .centerCrop()
+                    .into(new GlideDrawableImageViewTarget(view));
         }
     }
 
@@ -255,14 +258,20 @@ public class Night {
         }
     }
 
+    public void setNight(boolean isNight, String packageName) {
+        SkinManager.getInstance().setSkinPackageName(packageName);
+        setNight(isNight);
+    }
+
+
     /**
      * 设置夜间模式，在主动改变模式的时候调用
      *
      * @param isNight
+     * @deprecated
      */
     public void setNight(boolean isNight) {
-        if (mIsNight == isNight)
-            return;
+        if (mIsNight == isNight) return;
 
         mIsNight = isNight;
         for (NightModeChangeListener mListener : mListeners) {
@@ -295,190 +304,7 @@ public class Night {
         mListeners.remove(l);
     }
 
-    /**
-     * 从资源的名字拿到id
-     *
-     * @param context   上下文
-     * @param type      资源类型 color|drawable
-     * @param valueName 资源的名字
-     * @return 资源id
-     */
-    public int getResouceFromValueName(Context context, String type, String valueName) {
-        String value;
-        if (isNight()) {
-            value = valueName + "_night";
-        } else {
-            value = valueName;
-        }
-        int id = context.getResources().getIdentifier(value, type, context.getPackageName());
-        if (id == 0) {
-            Log.e(TAG, "Night$ResourceNotFoundException -> " + valueName);
-        }
-        return id;
-    }
-
-    public int getResouceFromValueName(Context context, String type, int valueId) {
-        return getResouceFromValueName(context, type, resourceMap.get(valueId));
-    }
-
-
-    /**
-     * 将一个drawble放到view 背景
-     *
-     * @param view      view
-     * @param valueName 资源string
-     */
-    @Deprecated
-    @BindingAdapter("drawable")
-    public static void setDrawable(View view, String valueName) {
-        Night.getInstance().drawable(view, valueName);
-    }
-
-    /**
-     * 设置textview 字体颜色
-     *
-     * @param view
-     * @param valueName
-     */
-    @Deprecated
-    @BindingAdapter("textcolor")
-    public static void setTextColor(@NonNull TextView view, @NonNull String valueName) {
-        Night.getInstance().textColor(view, valueName);
-    }
-
-    /**
-     * 将一个drawble放到view 背景
-     * <p>
-     * 须在整个应用view加载之前执行init方法
-     *
-     * @param view    view
-     * @param valueId 资源id
-     */
-    @BindingAdapter("drawable")
-    public static void setDrawable(View view, int valueId) {
-        Night.getInstance().drawable(view, valueId);
-    }
-
-    /**
-     * 设置背景颜色
-     *
-     * @param view      view
-     * @param valueName 资源string
-     */
-    @Deprecated
-    @BindingAdapter("background")
-    public static void setBackGround(@NonNull View view, @NonNull String valueName) {
-        Night.getInstance().background(view, valueName);
-    }
-
-    /**
-     * 设置textview 字体颜色
-     * <p>
-     * 须在整个应用view加载之前执行init方法
-     *
-     * @param view    view
-     * @param valueId 资源id
-     */
-    @BindingAdapter("textcolor")
-    public static void setTextColor(@NonNull TextView view, int valueId) {
-        Night.getInstance().textColor(view, valueId);
-    }
-
-    /**
-     * 设置textview hint 文字颜色
-     *
-     * @param view      view
-     * @param valueName 资源string
-     */
-    @Deprecated
-    @BindingAdapter("hinttextcolor")
-    public static void setHintTextColor(@NonNull TextView view, @NonNull String valueName) {
-        Night.getInstance().hintTextColor(view, valueName);
-    }
-
-    /**
-     * 设置view背景
-     * <p>
-     * 须在整个应用view加载之前执行init方法
-     *
-     * @param view    view
-     * @param valueId 资源id
-     */
-    @BindingAdapter("background")
-    public static void setBackGround(@NonNull View view, int valueId) {
-        Night.getInstance().background(view, valueId);
-    }
-
-    /**
-     * 设置textview左边图标
-     *
-     * @param view      view
-     * @param valueName 资源string
-     */
-    @Deprecated
-    @BindingAdapter("drawableleft")
-    public static void setDrawableLeft(@NonNull TextView view, @NonNull String valueName) {
-        Night.getInstance().drawableLeft(view, valueName);
-    }
-
-    /**
-     * 设置textview左边图标
-     * <p>
-     * 须在整个应用view加载之前执行init方法
-     *
-     * @param view    view
-     * @param valueId 资源id
-     */
-    @BindingAdapter("drawableleft")
-    public static void setDrawableLeft(@NonNull TextView view, int valueId) {
-        Night.getInstance().drawableLeft(view, valueId);
-    }
-
-    /**
-     * 设置textview hint 文字颜色
-     * <p>
-     * 须在整个应用view加载之前执行init方法
-     *
-     * @param view    view
-     * @param valueId 资源id
-     */
-    @BindingAdapter("hinttextcolor")
-    public static void setHintTextColor(@NonNull TextView view, int valueId) {
-        Night.getInstance().hintTextColor(view, valueId);
-    }
-
-    @BindingAdapter("setimageview")
-    public static void setImageWithGlide(@NonNull ImageView imageView, @IdRes int valueId) {
-        Night.getInstance().setImageViewWithGlide(imageView, valueId);
-    }
-
-    @BindingAdapter("setimageview")
-    public static void setImageWithGlide(@NonNull ImageView imageView, String valueName) {
-        Night.getInstance().setImageViewWithGlide(imageView, valueName);
-    }
-
-
-    /**
-     * 设置状态栏沉浸
-     * <p>
-     * 在base activity中调用即可
-     *
-     * @param activity activity
-     */
-    public static void setWindowStatusBarColor(Activity activity) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = activity.getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-                int colorId = Night.getInstance().getResouceFromValueName(activity, "color",
-                        "bg");
-
-                window.setStatusBarColor(activity.getResources().getColor(colorId));
-                window.setNavigationBarColor(activity.getResources().getColor(colorId));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public SparseArray<String> getResourceMap() {
+        return resourceMap;
     }
 }
