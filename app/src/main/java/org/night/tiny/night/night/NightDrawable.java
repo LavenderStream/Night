@@ -1,5 +1,6 @@
 package org.night.tiny.night.night;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -14,14 +15,14 @@ import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import org.night.tiny.night.R;
 
 /**
+ * 颜色切换的主要实现类
  * Created by tiny on 4/28/2017.
  */
-
-public class NightDrawable {
+class NightDrawable {
 
     void setViewDrawable(View view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_drawable))) {
-            int drawable = ResourcesManager.getInstance().getResouceFromValueName(view.getContext(),
+            int drawable = ResourcesManager.getInstance().getResouceFromValueName(
                     "drawable", (String) view.getTag(R.id.night_drawable));
             view.setBackgroundResource(drawable);
         }
@@ -29,33 +30,45 @@ public class NightDrawable {
 
 
     void setViewBackGround(View view) {
-        if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_background))) {
-            int resourceId = ResourcesManager.getInstance().getResouceFromValueName(view.getContext(),
-                    "color", (String) view.getTag(R.id.night_background));
-            view.setBackgroundColor(ResourcesManager.getInstance().getResource().getColor(resourceId));
+        String tag = (String) view.getTag(R.id.night_background);
+        if (!TextUtils.isEmpty(tag)) {
+            try {
+                int color = ResourcesManager.getInstance().getColor(tag);
+                view.setBackgroundColor(color);
+            } catch (Resources.NotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
 
     void setViewTextColor(View view) {
-        if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_textcolor))) {
-            int colorId = ResourcesManager.getInstance().getResouceFromValueName(view.getContext(),
-                    "color", (String) view.getTag(R.id.night_textcolor));
-            ((TextView) view).setTextColor(view.getResources().getColor(colorId));
+        String tag = (String) view.getTag(R.id.night_textcolor);
+        if (!TextUtils.isEmpty(tag)) {
+            try {
+                int color = ResourcesManager.getInstance().getColor(tag);
+                ((TextView) view).setTextColor(color);
+            } catch (Resources.NotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     void setViewHintTextColor(View view) {
-        if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_hinttextcolor))) {
-            int colorId = ResourcesManager.getInstance().getResouceFromValueName(view.getContext(),
-                    "color", (String) view.getTag(R.id.night_hinttextcolor));
-            ((TextView) view).setHintTextColor(view.getResources().getColor(colorId));
+        String tag = (String) view.getTag(R.id.night_hinttextcolor);
+        if (!TextUtils.isEmpty(tag)) {
+            try {
+                int color = ResourcesManager.getInstance().getColor(tag);
+                ((TextView) view).setHintTextColor(color);
+            } catch (Resources.NotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     void setViewDrawableLeft(View view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_drawableleft))) {
-            int resId = ResourcesManager.getInstance().getResouceFromValueName(view.getContext(),
+            int resId = ResourcesManager.getInstance().getResouceFromValueName(
                     "drawable", (String) view.getTag(R.id.night_drawableleft));
             Drawable drawableLeft = view.getContext().getResources().getDrawable(resId);
             drawableLeft.setBounds(0, 0, drawableLeft.getMinimumWidth(), drawableLeft
@@ -67,7 +80,7 @@ public class NightDrawable {
     void setImageViewWithGlide(ImageView view) {
         if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_imageview))) {
             Glide.with(view.getContext()).load(ResourcesManager.getInstance()
-                    .getResouceFromValueName(view.getContext(), "drawable",
+                    .getResouceFromValueName("drawable",
                             (String) view.getTag(R.id.night_imageview)))
                     .dontAnimate()
                     .centerCrop()
@@ -94,8 +107,8 @@ public class NightDrawable {
             setImageViewWithGlide((ImageView) view);
         }
         // 修改实现night模式更改的自定义view
-        if (view instanceof NightModeChangeListener) {
-            ((NightModeChangeListener) view).onNightChange();
+        if (view instanceof NightChange) {
+            ((NightChange) view).onNightChange();
         }
     }
 

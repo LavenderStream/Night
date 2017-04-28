@@ -26,12 +26,11 @@ import java.util.Set;
  * 使用string进行注入时没有这个限制
  */
 @SuppressWarnings("All")
-public class Night {
-    private static final String TAG = "Night";
-
+public class Night implements NightError {
     private static Night ourInstance = new Night();
     // 存放fragment或者activity的set，用于通知存活页面进行更改
-    private static Set<NightModeChangeListener> mListeners = new HashSet<>();
+    private static Set<NightChange> mListeners = new HashSet<>();
+    private static Set<NightError> mError = new HashSet<>();
     // 存放r文件中的color drawable的相关信息
     private static final SparseArray<String> resourceMap = new SparseArray<>();
 
@@ -50,13 +49,13 @@ public class Night {
     }
 
     void drawable(View view, String valueName) {
-        Utils.checkNull(valueName);
+        NightUtils.checkNull(valueName);
         view.setTag(R.id.night_drawable, valueName);
         mNightDrawable.setViewDrawable(view);
     }
 
     void background(View view, String valueName) {
-        Utils.checkNull(valueName);
+        NightUtils.checkNull(valueName);
         view.setTag(R.id.night_background, valueName);
         mNightDrawable.setViewBackGround(view);
     }
@@ -70,7 +69,7 @@ public class Night {
     }
 
     void textColor(TextView view, String valueName) {
-        Utils.checkNull(valueName);
+        NightUtils.checkNull(valueName);
         view.setTag(R.id.night_textcolor, valueName);
         mNightDrawable.setViewTextColor(view);
     }
@@ -80,7 +79,7 @@ public class Night {
     }
 
     void hintTextColor(TextView view, String valueName) {
-        Utils.checkNull(valueName);
+        NightUtils.checkNull(valueName);
         view.setTag(R.id.night_hinttextcolor, valueName);
         mNightDrawable.setViewHintTextColor(view);
     }
@@ -90,7 +89,7 @@ public class Night {
     }
 
     void drawableLeft(TextView view, String valueName) {
-        Utils.checkNull(valueName);
+        NightUtils.checkNull(valueName);
         view.setTag(R.id.night_drawableleft, valueName);
         mNightDrawable.setViewDrawableLeft(view);
     }
@@ -101,7 +100,7 @@ public class Night {
     }
 
     void setImageViewWithGlide(ImageView view, String valueName) {
-        Utils.checkNull(valueName);
+        NightUtils.checkNull(valueName);
         view.setTag(R.id.night_imageview, valueName);
         mNightDrawable.setImageViewWithGlide(view);
     }
@@ -142,6 +141,7 @@ public class Night {
      * @param rclass   r.xx.class
      */
     public void initNight(Context context, boolean isNight, String skinPath, String skinName, Class... rclass) {
+        ResourcesManager.getInstance().setError(this);
         ResourcesManager.getInstance().setSkinPath(skinPath);
         ResourcesManager.getInstance().setContext(context.getApplicationContext());
         ResourcesManager.getInstance().change(skinName, isNight);
@@ -183,7 +183,7 @@ public class Night {
     public void setNight(boolean isNight, String skinName) {
         ResourcesManager.getInstance().change(skinName, isNight);
 
-        for (NightModeChangeListener mListener : mListeners) {
+        for (NightChange mListener : mListeners) {
             mListener.onNightChange();
         }
     }
@@ -212,27 +212,39 @@ public class Night {
      *
      * @param l
      */
-    public void addListener(NightModeChangeListener l) {
+    public void addListener(NightChange l) {
         mListeners.add(l);
+    }
+
+    public void addError(NightError e) {
+        mError.add(e);
     }
 
     /**
      * 清楚错有页面，须在程序完全退出的时候调用
      */
-    public void clearListener() {
+    public void clearAllListener() {
         mListeners.clear();
+        mError.clear();
     }
 
-    /**
-     * 指定移除监听
-     *
-     * @param l
-     */
-    public void removeListener(NightModeChangeListener l) {
+    public void removeListener(NightChange l) {
         mListeners.remove(l);
+    }
+
+    public void removeError(NightError e) {
+        mError.remove(e);
     }
 
     SparseArray<String> getResourceMap() {
         return resourceMap;
     }
+
+    @Override
+    public void error(String skinName) {
+        for (NightError skinError : mError) {
+            skinError.error(skinName);
+        }
+    }
+
 }

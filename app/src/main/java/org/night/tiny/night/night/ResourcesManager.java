@@ -6,8 +6,6 @@ import android.content.res.Resources;
 import android.os.Environment;
 import android.util.Log;
 
-import com.apkfuns.logutils.LogUtils;
-
 import java.io.File;
 import java.lang.reflect.Method;
 
@@ -17,7 +15,7 @@ import java.lang.reflect.Method;
  */
 @SuppressWarnings("All")
 class ResourcesManager {
-    private static final String TAG = "SkinManager";
+    private static final String TAG = "Night";
     private static final String PREFIX = "org.";
     private static final String S_SKIN_PATH = Environment.getExternalStorageDirectory() + File
             .separator;
@@ -25,6 +23,8 @@ class ResourcesManager {
     private static final String S_DEFAULT_SKIN_NAME = "default";
     // 存放皮肤包的路径 以/结尾 初始化时设置一次
     private static String SKIN_PATH = S_SKIN_PATH;
+
+    private NightError mError;
 
     // 当前皮肤包的名称
     private String mSkinName;
@@ -50,38 +50,46 @@ class ResourcesManager {
         return isNight;
     }
 
+    int getColor(String tag) throws Resources.NotFoundException {
+        int resourceId = getResouceFromValueName("color", tag);
+        return mResource.getColor(resourceId);
+    }
 
-    /**
-     * 从资源的名字拿到id
-     *
-     * @param context   上下文
-     * @param type      资源类型 color|drawable
-     * @param valueName 资源的名字
-     * @return 资源id
-     */
-    int getResouceFromValueName(Context context, String type, String valueName) {
-        int resourceId = -1;
+    int getResouceFromValueName(String type, String valueName) {
+        int resourceId = 0;
 
         if (mResource == null) {
-            Log.e(TAG, "Night$ResourceNotFoundException -> " + valueName);
-        } else {
-            String value;
-            if (isNight) {
-                value = valueName + "_night";
-            } else {
-                value = valueName;
+            Log.e(TAG, "Night$ResourceNotFoundException -> " + mPackageName + " " + valueName);
+            if (mError != null) {
+                mError.error(mSkinName);
             }
-
-            LogUtils.d("ResourcesManager -> getResouceFromValueName: " + mPackageName + " " +
-                    mResource + " " + type + " " + value);
-            LogUtils.d("ResourcesManager -> getResouceFromValueName: " + isNight);
-
+        } else {
+            String value = getValueWithNight(valueName);
             resourceId = mResource.getIdentifier(value, type, mPackageName);
             if (resourceId == 0) {
-                Log.e(TAG, "Night$ResourceNotFoundException -> " + value);
+                Log.e(TAG, "Night$ResourceNotFoundException -> " + mPackageName + " " + value);
+
+                if (mError != null) {
+                    mError.error(mSkinName);
+                }
+
+                mSkinName = S_DEFAULT_SKIN_NAME;
+                loadPlugin();
+                resourceId = mResource.getIdentifier(value, type, mPackageName);
             }
         }
+
         return resourceId;
+    }
+
+    private String getValueWithNight(String valueName) {
+        String value;
+        if (isNight) {
+            value = valueName + "_night";
+        } else {
+            value = valueName;
+        }
+        return value;
     }
 
     private void loadPlugin() {
@@ -125,6 +133,10 @@ class ResourcesManager {
 
     public void setNight(boolean night) {
         isNight = night;
+    }
+
+    public void setError(NightError error) {
+        this.mError = error;
     }
 
     public Resources getResource() {

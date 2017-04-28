@@ -5,15 +5,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import org.night.tiny.night.databinding.ActivityMainBinding;
 import org.night.tiny.night.night.Night;
-import org.night.tiny.night.night.NightModeChangeListener;
-import org.night.tiny.night.night.ViewBind;
+import org.night.tiny.night.night.NightChange;
+import org.night.tiny.night.night.NightError;
 
 import java.io.File;
 
-public class MainActivity extends AppCompatActivity implements NightModeChangeListener {
+public class MainActivity extends AppCompatActivity implements NightChange, NightError {
 
     private static final String S_SKIN_PATH = Environment.getExternalStorageDirectory() + File
             .separator;
@@ -26,13 +27,12 @@ public class MainActivity extends AppCompatActivity implements NightModeChangeLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // 传文件名， 本应用的默认主题
-        Night.getInstance().initNight(this, true, S_SKIN_PATH, "default", R.color.class);
+        Night.getInstance().initNight(this, true, S_SKIN_PATH, "default1", R.color.class);
         super.onCreate(savedInstanceState);
         Night.getInstance().addListener(this);
+        Night.getInstance().addError(this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-
-        ViewBind.setBackGround(mBinding.clLayout, R.color.bg);
 
         mBinding.btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,11 +40,6 @@ public class MainActivity extends AppCompatActivity implements NightModeChangeLi
                 Night.getInstance().setNight(true, "pink");
             }
         });
-
-/*
-        Resources resources = ResourcesManager.getInstance().loadPlugin(this);
-        int reid = ResourcesManager.getInstance().getResouceFromValueName(this, "color", "bg");
-        mBinding.clLayout.setBackgroundColor(reid);*/
 
     }
 
@@ -57,5 +52,11 @@ public class MainActivity extends AppCompatActivity implements NightModeChangeLi
     protected void onDestroy() {
         super.onDestroy();
         Night.getInstance().removeListener(this);
+        Night.getInstance().removeError(this);
+    }
+
+    @Override
+    public void error(String skinName) {
+        Toast.makeText(this, skinName + "error", Toast.LENGTH_SHORT).show();
     }
 }

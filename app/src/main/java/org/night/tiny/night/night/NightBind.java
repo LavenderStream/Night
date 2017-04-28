@@ -8,10 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
+ * 代码中执行改变view颜色的方法
  * Created by tiny on 2017/4/27.
  */
 @SuppressWarnings("All")
-public class ViewBind {
+public class NightBind {
 
     /**
      * 将一个drawble放到view 背景

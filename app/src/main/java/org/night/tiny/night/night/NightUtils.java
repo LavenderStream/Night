@@ -10,9 +10,9 @@ import android.view.WindowManager;
  * Created by tiny on 2017/4/27.
  */
 
-public class Utils {
+public class NightUtils {
 
-    public static void checkNull(String valueName) {
+    static void checkNull(String valueName) {
         if (TextUtils.isEmpty(valueName)) {
             throw new RuntimeException("Night$ResourceMustNoNull" + valueName);
         }
@@ -31,7 +31,7 @@ public class Utils {
                 Window window = activity.getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-                int colorId = ResourcesManager.getInstance().getResouceFromValueName(activity, "color", "bg");
+                int colorId = ResourcesManager.getInstance().getResouceFromValueName("color", "bg");
 
                 window.setStatusBarColor(activity.getResources().getColor(colorId));
                 window.setNavigationBarColor(activity.getResources().getColor(colorId));
