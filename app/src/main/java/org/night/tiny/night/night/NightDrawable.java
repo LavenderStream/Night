@@ -21,10 +21,14 @@ import org.night.tiny.night.R;
 class NightDrawable {
 
     void setViewDrawable(View view) {
-        if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_drawable))) {
-            int drawable = ResourcesManager.getInstance().getResouceFromValueName(
-                    "drawable", (String) view.getTag(R.id.night_drawable));
-            view.setBackgroundResource(drawable);
+        String tag = (String) view.getTag(R.id.night_drawable);
+        if (!TextUtils.isEmpty(tag)) {
+            try {
+                Drawable drawable = ResourcesManager.getInstance().getDrawble(tag);
+                view.setBackground(drawable);
+            } catch (Resources.NotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -67,27 +71,33 @@ class NightDrawable {
     }
 
     void setViewDrawableLeft(View view) {
-        if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_drawableleft))) {
-            int resId = ResourcesManager.getInstance().getResouceFromValueName(
-                    "drawable", (String) view.getTag(R.id.night_drawableleft));
-            Drawable drawableLeft = view.getContext().getResources().getDrawable(resId);
-            drawableLeft.setBounds(0, 0, drawableLeft.getMinimumWidth(), drawableLeft
-                    .getMinimumHeight());
-            ((TextView) view).setCompoundDrawables(drawableLeft, null, null, null);
+        String tag = (String) view.getTag(R.id.night_drawableleft);
+        if (!TextUtils.isEmpty(tag)) {
+            try {
+                Drawable drawableLeft = ResourcesManager.getInstance().getDrawble(tag);
+                drawableLeft.setBounds(0, 0, drawableLeft.getMinimumWidth(), drawableLeft
+                        .getMinimumHeight());
+                ((TextView) view).setCompoundDrawables(drawableLeft, null, null, null);
+            } catch (Resources.NotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     void setImageViewWithGlide(ImageView view) {
-        if (!TextUtils.isEmpty((CharSequence) view.getTag(R.id.night_imageview))) {
-            Glide.with(view.getContext()).load(ResourcesManager.getInstance()
-                    .getResouceFromValueName("drawable",
-                            (String) view.getTag(R.id.night_imageview)))
-                    .dontAnimate()
-                    .centerCrop()
-                    .into(new GlideDrawableImageViewTarget(view));
+        String tag = (String) view.getTag(R.id.night_imageview);
+        if (!TextUtils.isEmpty(tag)) {
+            try {
+                Drawable drawable = ResourcesManager.getInstance().getDrawble(tag);
+                Glide.with(view.getContext()).load(drawable)
+                        .dontAnimate()
+                        .centerCrop()
+                        .into(new GlideDrawableImageViewTarget(view));
+            } catch (Resources.NotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
-
 
     /**
      * 更改布局资源

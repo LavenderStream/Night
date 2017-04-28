@@ -7,7 +7,9 @@
     <RelativeLayout
         android:id="@+id/cl_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        night:drawable='@{"ic_launcher"}'
+        tools:background="@drawable/ic_launcher">
 
         <Button
             android:id="@+id/btn"

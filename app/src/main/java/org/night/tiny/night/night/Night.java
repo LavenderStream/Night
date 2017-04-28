@@ -27,6 +27,8 @@ import java.util.Set;
  */
 @SuppressWarnings("All")
 public class Night implements NightError {
+    public static final String DEFAULT_SKIN = "default";
+
     private static Night ourInstance = new Night();
     // 存放fragment或者activity的set，用于通知存活页面进行更改
     private static Set<NightChange> mListeners = new HashSet<>();

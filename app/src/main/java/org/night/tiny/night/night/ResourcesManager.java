@@ -3,6 +3,7 @@ package org.night.tiny.night.night;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
 
@@ -48,6 +49,11 @@ class ResourcesManager {
 
     public boolean isNight() {
         return isNight;
+    }
+
+    Drawable getDrawble(String tag) throws Resources.NotFoundException {
+        int resourceId = getResouceFromValueName("drawable", tag);
+        return mResource.getDrawable(resourceId);
     }
 
     int getColor(String tag) throws Resources.NotFoundException {

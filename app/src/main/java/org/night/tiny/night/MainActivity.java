@@ -14,6 +14,8 @@ import org.night.tiny.night.night.NightError;
 
 import java.io.File;
 
+import static org.night.tiny.night.night.Night.DEFAULT_SKIN;
+
 public class MainActivity extends AppCompatActivity implements NightChange, NightError {
 
     private static final String S_SKIN_PATH = Environment.getExternalStorageDirectory() + File
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements NightChange, Nigh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // 传文件名， 本应用的默认主题
-        Night.getInstance().initNight(this, true, S_SKIN_PATH, "default1", R.color.class);
+        Night.getInstance().initNight(this, true, S_SKIN_PATH, DEFAULT_SKIN, R.color.class);
         super.onCreate(savedInstanceState);
         Night.getInstance().addListener(this);
         Night.getInstance().addError(this);
