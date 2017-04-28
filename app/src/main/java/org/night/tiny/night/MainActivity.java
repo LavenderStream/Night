@@ -29,20 +29,37 @@ public class MainActivity extends AppCompatActivity implements NightChange, Nigh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // 传文件名， 本应用的默认主题
-        Night.getInstance().initNight(this, true, S_SKIN_PATH, DEFAULT_SKIN, R.color.class);
+        Night.getInstance().initNight(this, S_SKIN_PATH, DEFAULT_SKIN, R.color.class);
         super.onCreate(savedInstanceState);
         Night.getInstance().addListener(this);
         Night.getInstance().addError(this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        click();
 
-        mBinding.btn.setOnClickListener(new View.OnClickListener() {
+    }
+
+    private void click() {
+        mBinding.def.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Night.getInstance().setNight(true, "pink");
+                Night.getInstance().setNight(DEFAULT_SKIN);
             }
         });
 
+        mBinding.pink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Night.getInstance().setNight("pink");
+            }
+        });
+
+        mBinding.yellow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Night.getInstance().setNight("yellow");
+            }
+        });
     }
 
     @Override
@@ -60,5 +77,6 @@ public class MainActivity extends AppCompatActivity implements NightChange, Nigh
     @Override
     public void error(String skinName) {
         Toast.makeText(this, skinName + "error", Toast.LENGTH_SHORT).show();
+        //Night.getInstance().setNight(DEFAULT_SKIN);
     }
 }

@@ -64,12 +64,7 @@ class ResourcesManager {
     int getResouceFromValueName(String type, String valueName) {
         int resourceId = 0;
 
-        if (mResource == null) {
-            Log.e(TAG, "Night$ResourceNotFoundException -> " + mPackageName + " " + valueName);
-            if (mError != null) {
-                mError.error(mSkinName);
-            }
-        } else {
+        if (mResource != null) {
             String value = getValueWithNight(valueName);
             resourceId = mResource.getIdentifier(value, type, mPackageName);
             if (resourceId == 0) {
@@ -78,10 +73,6 @@ class ResourcesManager {
                 if (mError != null) {
                     mError.error(mSkinName);
                 }
-
-                mSkinName = S_DEFAULT_SKIN_NAME;
-                loadPlugin();
-                resourceId = mResource.getIdentifier(value, type, mPackageName);
             }
         }
 
