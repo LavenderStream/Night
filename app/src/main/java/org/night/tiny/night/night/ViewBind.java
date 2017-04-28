@@ -1,13 +1,9 @@
-package org.night.tiny.night;
+package org.night.tiny.night.night;
 
-import android.app.Activity;
 import android.databinding.BindingAdapter;
-import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,7 +11,7 @@ import android.widget.TextView;
  * Created by tiny on 2017/4/27.
  */
 @SuppressWarnings("All")
-public class Binding {
+public class ViewBind {
 
     /**
      * 将一个drawble放到view 背景
