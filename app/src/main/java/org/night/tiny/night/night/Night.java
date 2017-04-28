@@ -36,7 +36,6 @@ public class Night {
     private static final SparseArray<String> resourceMap = new SparseArray<>();
 
     private NightDrawable mNightDrawable;
-    private Context mApplicationContext;
 
     public static Night getInstance() {
         return ourInstance;
@@ -143,11 +142,9 @@ public class Night {
      * @param rclass   r.xx.class
      */
     public void initNight(Context context, boolean isNight, String skinPath, String skinName, Class... rclass) {
-        this.mApplicationContext = context.getApplicationContext();
-
         ResourcesManager.getInstance().setSkinPath(skinPath);
-        ResourcesManager.getInstance().setNight(isNight);
-        ResourcesManager.getInstance().setSkinName(context, skinName);
+        ResourcesManager.getInstance().setContext(context.getApplicationContext());
+        ResourcesManager.getInstance().change(skinName, isNight);
 
         if (rclass.length == 0) {
             LogUtils.i("Night -> initNight -> Make sure , No id-inject in the project");
@@ -184,8 +181,7 @@ public class Night {
      * @param skinName 皮肤插件名字
      */
     public void setNight(boolean isNight, String skinName) {
-        ResourcesManager.getInstance().setSkinName(mApplicationContext, skinName);
-        ResourcesManager.getInstance().setNight(isNight);
+        ResourcesManager.getInstance().change(skinName, isNight);
 
         for (NightModeChangeListener mListener : mListeners) {
             mListener.onNightChange();

@@ -25,20 +25,19 @@ public class MainActivity extends AppCompatActivity implements NightModeChangeLi
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Night.getInstance().addListener(this);
         // 传文件名， 本应用的默认主题
-        Night.getInstance().initNight(this, S_SKIN_PATH, "default", R.color.class);
-
+        Night.getInstance().initNight(this, true, S_SKIN_PATH, "default", R.color.class);
+        super.onCreate(savedInstanceState);
+        Night.getInstance().addListener(this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
 
         ViewBind.setBackGround(mBinding.clLayout, R.color.bg);
 
         mBinding.btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Night.getInstance().setNight("pink");
+                Night.getInstance().setNight(true, "pink");
             }
         });
 
